@@ -1,6 +1,10 @@
 import {
+  ArrayNotEmpty,
+  IsArray,
   IsNotEmpty,
+  IsNumber,
   IsOptional,
+  IsString,
   registerDecorator,
   ValidationArguments,
   ValidationOptions,
@@ -35,13 +39,25 @@ import {
 
 export class updateMovieDto {
   @IsNotEmpty()
+  @IsString()
   @IsOptional()
   title?: string;
 
-  @IsNotEmpty()
+  @IsArray()
+  @ArrayNotEmpty()
+  @IsNumber({}, { each: true })
   @IsOptional()
-  genre?: string;
+  genreIds?: number[];
 
   // @IsPasswordValid()
   // test: string;
+
+  @IsNotEmpty()
+  @IsOptional()
+  detail?: string;
+
+  @IsNotEmpty()
+  @IsNumber()
+  @IsOptional()
+  directorId?: number;
 }
