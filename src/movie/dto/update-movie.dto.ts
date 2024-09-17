@@ -1,16 +1,7 @@
-import {
-  ArrayNotEmpty,
-  IsArray,
-  IsNotEmpty,
-  IsNumber,
-  IsOptional,
-  IsString,
-  registerDecorator,
-  ValidationArguments,
-  ValidationOptions,
-  ValidatorConstraint,
-  ValidatorConstraintInterface,
-} from 'class-validator';
+import { CreateMovieDto } from './create-movie.dto';
+import { PartialType } from '@nestjs/mapped-types';
+
+export class UpdateMovieDto extends PartialType(CreateMovieDto) {}
 
 // Custom Validator
 // @ValidatorConstraint()
@@ -37,27 +28,27 @@ import {
 //   };
 // }
 
-export class updateMovieDto {
-  @IsNotEmpty()
-  @IsString()
-  @IsOptional()
-  title?: string;
+// export class updateMovieDto {
+//   @IsNotEmpty()
+//   @IsString()
+//   @IsOptional()
+//   title?: string;
 
-  @IsArray()
-  @ArrayNotEmpty()
-  @IsNumber({}, { each: true })
-  @IsOptional()
-  genreIds?: number[];
+//   @IsArray()
+//   @ArrayNotEmpty()
+//   @IsNumber({}, { each: true })
+//   @IsOptional()
+//   genreIds?: number[];
 
-  // @IsPasswordValid()
-  // test: string;
+//   // @IsPasswordValid()
+//   // test: string;
 
-  @IsNotEmpty()
-  @IsOptional()
-  detail?: string;
+//   @IsNotEmpty()
+//   @IsOptional()
+//   detail?: string;
 
-  @IsNotEmpty()
-  @IsNumber()
-  @IsOptional()
-  directorId?: number;
-}
+//   @IsNotEmpty()
+//   @IsNumber()
+//   @IsOptional()
+//   directorId?: number;
+// }

@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateMovieDto } from './dto/create-movie.dto';
-import { updateMovieDto } from './dto/update-movie.dto';
+import { UpdateMovieDto } from './dto/update-movie.dto';
 import { Movie } from './entity/movie.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { DataSource, In, Like, Repository } from 'typeorm';
@@ -160,7 +160,7 @@ export class MovieService {
     }
   }
 
-  async update(id: number, updateMovieDto: updateMovieDto) {
+  async update(id: number, updateMovieDto: UpdateMovieDto) {
     const qr = this.dataSource.createQueryRunner();
     await qr.connect();
     await qr.startTransaction();
