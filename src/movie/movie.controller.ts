@@ -31,6 +31,9 @@ import {
   FilesInterceptor,
 } from '@nestjs/platform-express';
 import { MovieFilePipe } from './pipe/movie-file.pipe';
+import { UserId } from 'src/user/decorator/user-id.decorator';
+import { QueryRunner } from 'src/common/decorator/query-runner.decorator';
+import { QueryRunner as QR } from 'typeorm';
 
 @Controller('movie')
 @UseInterceptors(ClassSerializerInterceptor)
@@ -57,29 +60,12 @@ export class MovieController {
   @Post()
   @RBAC(Role.admin)
   @UseInterceptors(TransactionInterceptor)
-  @UseInterceptors(
-    FileInterceptor('movie', {
-      limits: {
-        fileSize: 20000000,
-      },
-      fileFilter: (req, file, callback) => {
-        if (file.mimetype !== 'video/mp4') {
-          return callback(
-            new BadRequestException('MP4 파일만 업로드 가능합니다!'),
-            false,
-          );
-        }
-
-        return callback(null, true);
-      },
-    }),
-  )
   postMovie(
     @Body() body: CreateMovieDto,
-    @Request() req,
-    @UploadedFile() movie: Express.Multer.File,
+    @QueryRunner() queryRunner: QR,
+    @UserId() userId: number,
   ) {
-    return this.movieService.create(body, movie.filename, req.queryRunner);
+    return this.movieService.create(body, userId, queryRunner);
   }
 
   @Patch(':id')
@@ -96,4 +82,11 @@ export class MovieController {
   deleteMovie(@Param('id', ParseIntPipe) id: number) {
     return this.movieService.remove(id);
   }
+
+  /**
+   * [Like] [DisLike]
+   *
+   * 아무것도 누르지 않은 상태
+   * Like & DisLike 모두 버튼 꺼져있음
+   */
 }

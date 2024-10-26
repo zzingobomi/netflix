@@ -10,6 +10,7 @@ import { Genre } from 'src/genre/entity/genre.entity';
 import { GetMoviesDto } from './dto/get-movies.dto';
 import { CommonService } from 'src/common/common.service';
 import { join } from 'path';
+import { rename } from 'fs/promises';
 
 @Injectable()
 export class MovieService {
@@ -52,15 +53,9 @@ export class MovieService {
       .leftJoinAndSelect('movie.director', 'director')
       .leftJoinAndSelect('movie.genres', 'genres')
       .leftJoinAndSelect('movie.detail', 'detail')
+      .leftJoinAndSelect('movie.creator', 'creator')
       .where('movie.id = :id', { id })
       .getOne();
-
-    // const movie = await this.movieRepository.findOne({
-    //   where: {
-    //     id,
-    //   },
-    //   relations: ['detail', 'director', 'genres'],
-    // });
 
     if (!movie) {
       throw new NotFoundException('존재하지 않는 ID의 영화입니다!');
@@ -71,7 +66,7 @@ export class MovieService {
 
   async create(
     createMovieDto: CreateMovieDto,
-    movieFileName: string,
+    userId: number,
     qr: QueryRunner,
   ) {
     const director = await qr.manager.findOne(Director, {
@@ -108,6 +103,7 @@ export class MovieService {
     const movieDetailId = movieDetail.identifiers[0].id;
 
     const movieFolder = join('public', 'movie');
+    const tempFolder = join('public', 'temp');
 
     const movie = await qr.manager
       .createQueryBuilder()
@@ -119,7 +115,10 @@ export class MovieService {
           id: movieDetailId,
         },
         director,
-        movieFilePath: join(movieFolder, movieFileName),
+        creator: {
+          id: userId,
+        },
+        movieFilePath: join(movieFolder, createMovieDto.movieFileName),
       })
       .execute();
 
@@ -130,6 +129,11 @@ export class MovieService {
       .relation(Movie, 'genres')
       .of(movieId)
       .add(genres.map((genre) => genre.id));
+
+    await rename(
+      join(process.cwd(), tempFolder, createMovieDto.movieFileName),
+      join(process.cwd(), movieFolder, createMovieDto.movieFileName),
+    );
 
     return await qr.manager.findOne(Movie, {
       where: {
