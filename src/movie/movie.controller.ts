@@ -43,9 +43,8 @@ export class MovieController {
   @Public()
   @Get()
   // @UseInterceptors(CacheInterceptor)
-  getMovies(@Request() req: any, @Query() dto: GetMoviesDto) {
-    console.log(req.user);
-    return this.movieService.findAll(dto);
+  getMovies(@Query() dto: GetMoviesDto, @UserId() userId?: number) {
+    return this.movieService.findAll(dto, userId);
   }
 
   @Public()
@@ -89,4 +88,19 @@ export class MovieController {
    * 아무것도 누르지 않은 상태
    * Like & DisLike 모두 버튼 꺼져있음
    */
+  @Post(':id/like')
+  createMovieLike(
+    @Param('id', ParseIntPipe) movieId: number,
+    @UserId() userId: number,
+  ) {
+    return this.movieService.toggleMovieLike(movieId, userId, true);
+  }
+
+  @Post(':id/dislike')
+  createMovieDislike(
+    @Param('id', ParseIntPipe) movieId: number,
+    @UserId() userId: number,
+  ) {
+    return this.movieService.toggleMovieLike(movieId, userId, false);
+  }
 }

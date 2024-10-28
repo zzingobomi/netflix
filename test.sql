@@ -28,3 +28,13 @@ from movie
 where ("likeCount", id, "createdAt") < (20, 35, '2024-10-23 23:13:17.326')
 order by "likeCount" desc, id desc, "createdAt" desc
 limit 5
+
+# movie_user_like 테스트 데이터 생성
+insert into movie_user_like ("userId", "movieId", "isLike")
+	values
+	(1, 2, true),
+	(1, 3, true),
+	(1, 5, false),
+	(2, 5, false),
+	(2, 6, true),
+	(2, 7, true)
