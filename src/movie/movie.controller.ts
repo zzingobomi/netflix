@@ -34,6 +34,11 @@ import { MovieFilePipe } from './pipe/movie-file.pipe';
 import { UserId } from 'src/user/decorator/user-id.decorator';
 import { QueryRunner } from 'src/common/decorator/query-runner.decorator';
 import { QueryRunner as QR } from 'typeorm';
+import {
+  CacheKey,
+  CacheTTL,
+  CacheInterceptor as CI,
+} from '@nestjs/cache-manager';
 
 @Controller('movie')
 @UseInterceptors(ClassSerializerInterceptor)
@@ -45,6 +50,16 @@ export class MovieController {
   // @UseInterceptors(CacheInterceptor)
   getMovies(@Query() dto: GetMoviesDto, @UserId() userId?: number) {
     return this.movieService.findAll(dto, userId);
+  }
+
+  /// /movie/recent
+  @Get('recent')
+  // URL 별로 캐시키가 설정된다. (queryParams 가 다르면 다른 키가 된다)
+  @UseInterceptors(CI)
+  //@CacheKey('getMoviesRecent')
+  //@CacheTTL(1000)
+  getMoviesRecent() {
+    return this.movieService.findRecent();
   }
 
   @Public()

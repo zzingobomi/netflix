@@ -9,6 +9,7 @@ import { Genre } from 'src/genre/entity/genre.entity';
 import { CommonModule } from 'src/common/common.module';
 import { User } from 'src/user/entities/user.entity';
 import { MovieUserLike } from './entity/movie-user-like.entity';
+import { CacheModule } from '@nestjs/cache-manager';
 
 @Module({
   imports: [
