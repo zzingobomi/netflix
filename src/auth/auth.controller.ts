@@ -5,11 +5,13 @@ import {
   Request,
   UseGuards,
   Get,
+  Body,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { LocalAuthGuard } from './strategy/local.strategy';
 import { JwtAuthGuard } from './strategy/jwt.strategy';
 import { Public } from './decorator/public.decorator';
+import { RBAC } from './decorator/rbac.decorator';
 
 @Controller('auth')
 export class AuthController {
@@ -25,6 +27,12 @@ export class AuthController {
   @Post('login')
   loginUser(@Headers('authorization') token: string) {
     return this.authService.login(token);
+  }
+
+  //@RBAC('admin')
+  @Post('token/block')
+  blockToken(@Body('token') token: string) {
+    return this.authService.tokenBlock(token);
   }
 
   @Post('token/access')
