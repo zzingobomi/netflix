@@ -42,23 +42,26 @@ import {
   CacheInterceptor as CI,
 } from '@nestjs/cache-manager';
 import { Throttle } from 'src/common/decorator/throttle.decorator';
+import { ApiBearerAuth, ApiOperation, ApiResponse } from '@nestjs/swagger';
 
-@Controller({
-  path: 'movie',
-  version: '2',
-})
-export class MovieControllerV2 {
-  @Get()
-  getMovies() {
-    return [];
-  }
-}
+// @Controller({
+//   path: 'movie',
+//   version: '2',
+// })
+// export class MovieControllerV2 {
+//   @Get()
+//   getMovies() {
+//     return [];
+//   }
+// }
 
-@Controller({
-  path: 'movie',
-  version: '1',
-  //version: VERSION_NEUTRAL
-})
+// @Controller({
+//   path: 'movie',
+//   version: '1',
+//   //version: VERSION_NEUTRAL
+// })
+@Controller('movie')
+@ApiBearerAuth()
 @UseInterceptors(ClassSerializerInterceptor)
 export class MovieController {
   constructor(private readonly movieService: MovieService) {}
@@ -71,6 +74,15 @@ export class MovieController {
     unit: 'minute',
   })
   //@Version('5')
+  @ApiOperation({ description: '[Movie]를 Pagination하는 API' })
+  @ApiResponse({
+    status: 200,
+    description: '성공적으로 API Pagination을 실행 했을때!',
+  })
+  @ApiResponse({
+    status: 400,
+    description: 'Pagination 데이터를 잘못 입력했을때',
+  })
   getMovies(@Query() dto: GetMoviesDto, @UserId() userId?: number) {
     return this.movieService.findAll(dto, userId);
   }

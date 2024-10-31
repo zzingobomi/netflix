@@ -2,16 +2,34 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ValidationPipe, VersioningType } from '@nestjs/common';
 import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
+import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
     logger: ['verbose'],
   });
-  app.enableVersioning({
-    //type: VersioningType.URI,
-    type: VersioningType.HEADER,
-    header: 'version',
+
+  const config = new DocumentBuilder()
+    .setTitle('코드팩토리 넷플리스')
+    .setDescription('코드팩토리 넷플리스 API 문서')
+    .setVersion('1.0')
+    .addBasicAuth()
+    .addBearerAuth()
+    .build();
+
+  const document = SwaggerModule.createDocument(app, config);
+
+  SwaggerModule.setup('doc', app, document, {
+    swaggerOptions: {
+      persistAuthorization: true,
+    },
   });
+
+  // app.enableVersioning({
+  //   //type: VersioningType.URI,
+  //   type: VersioningType.HEADER,
+  //   header: 'version',
+  // });
   app.useLogger(app.get(WINSTON_MODULE_NEST_PROVIDER));
   app.useGlobalPipes(
     new ValidationPipe({
