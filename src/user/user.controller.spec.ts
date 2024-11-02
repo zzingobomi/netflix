@@ -32,7 +32,7 @@ describe('UserController', () => {
   });
 
   it('should be defined', () => {
-    expect(true).toBeDefined();
+    expect(userController).toBeDefined();
   });
 
   describe('create', () => {

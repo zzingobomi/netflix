@@ -30,7 +30,17 @@ export class GenreService {
     return this.genreRepository.find();
   }
 
-  findOne(id: number) {
+  async findOne(id: number) {
+    const genre = await this.genreRepository.findOne({
+      where: {
+        id,
+      },
+    });
+
+    if (!genre) {
+      throw new NotFoundException('존재하지 않는 장르입니다.');
+    }
+
     return this.genreRepository.findOne({
       where: {
         id,

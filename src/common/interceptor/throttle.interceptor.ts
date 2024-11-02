@@ -1,4 +1,3 @@
-import { Cache, CACHE_MANAGER } from '@nestjs/cache-manager';
 import {
   CallHandler,
   ExecutionContext,
@@ -10,6 +9,7 @@ import {
 import { Reflector } from '@nestjs/core';
 import { Observable, tap } from 'rxjs';
 import { Throttle } from '../decorator/throttle.decorator';
+import { Cache, CACHE_MANAGER } from '@nestjs/cache-manager';
 
 @Injectable()
 export class ThrottleInterceptor implements NestInterceptor {

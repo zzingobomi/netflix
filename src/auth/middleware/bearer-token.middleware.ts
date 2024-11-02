@@ -1,6 +1,6 @@
-import { Cache } from '@nestjs/cache-manager';
 import {
   BadRequestException,
+  Inject,
   Injectable,
   NestMiddleware,
   UnauthorizedException,
@@ -9,12 +9,14 @@ import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { NextFunction, Request, Response } from 'express';
 import { envVariableKeys } from 'src/common/const/env.const';
+import { Cache, CACHE_MANAGER } from '@nestjs/cache-manager';
 
 @Injectable()
 export class BearerTokenMiddleware implements NestMiddleware {
   constructor(
     private readonly jwtService: JwtService,
     private readonly configService: ConfigService,
+    @Inject(CACHE_MANAGER)
     private readonly cacheManager: Cache,
   ) {}
 
