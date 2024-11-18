@@ -9,6 +9,11 @@ import {
 import { ChatService } from './chat.service';
 import { Socket } from 'socket.io';
 import { AuthService } from 'src/auth/auth.service';
+import { UseInterceptors } from '@nestjs/common';
+import { WsTransactionInterceptor } from 'src/common/interceptor/ws-transaction.interceptor';
+import { WsQueryRunner } from 'src/common/decorator/ws-query-runner.decorator';
+import { QueryRunner } from 'typeorm';
+import { CreateChatDto } from './dto/create-chat.dto';
 
 @WebSocketGateway()
 export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
@@ -26,6 +31,8 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
       if (payload) {
         client.data.user = payload;
+        this.chatService.registerClient(payload.sub, client);
+        this.chatService.joinUserRooms(payload, client);
       } else {
         client.disconnect();
       }
@@ -43,12 +50,14 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     }
   }
 
-  @SubscribeMessage('receiveMessage')
-  async receiveMessage(
-    @MessageBody() data: { message: string },
+  @SubscribeMessage('sendMessage')
+  @UseInterceptors(WsTransactionInterceptor)
+  async handleMessage(
+    @MessageBody() body: CreateChatDto,
     @ConnectedSocket() client: Socket,
+    @WsQueryRunner() qr: QueryRunner,
   ) {
-    console.log('receiveMessage', data);
-    console.log('client', client);
+    const payload = client.data.user;
+    await this.chatService.createMessage(payload, body, qr);
   }
 }
