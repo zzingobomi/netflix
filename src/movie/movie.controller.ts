@@ -24,7 +24,7 @@ import { UpdateMovieDto } from './dto/update-movie.dto';
 import { MovieTitleValidationPipe } from './pipe/movie-title-validation.pipe';
 import { Public } from 'src/auth/decorator/public.decorator';
 import { RBAC } from 'src/auth/decorator/rbac.decorator';
-import { Role } from 'src/user/entities/user.entity';
+//import { Role } from 'src/user/entities/user.entity';
 import { GetMoviesDto } from './dto/get-movies.dto';
 import { CacheInterceptor } from 'src/common/interceptor/cache.interceptor';
 import { TransactionInterceptor } from 'src/common/interceptor/transaction.interceptor';
@@ -44,6 +44,7 @@ import {
 } from '@nestjs/cache-manager';
 import { Throttle } from 'src/common/decorator/throttle.decorator';
 import { ApiBearerAuth, ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { Role } from '@prisma/client';
 
 // @Controller({
 //   path: 'movie',
@@ -117,13 +118,17 @@ export class MovieController {
 
   @Post()
   @RBAC(Role.admin)
-  @UseInterceptors(TransactionInterceptor)
+  // @UseInterceptors(TransactionInterceptor)
   postMovie(
     @Body() body: CreateMovieDto,
-    @QueryRunner() queryRunner: QR,
+    // @QueryRunner() queryRunner: QR,
     @UserId() userId: number,
   ) {
-    return this.movieService.create(body, userId, queryRunner);
+    return this.movieService.create(
+      body,
+      userId,
+      //queryRunner
+    );
   }
 
   @Patch(':id')
